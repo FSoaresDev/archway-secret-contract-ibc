@@ -1,0 +1,34 @@
+[package]
+name = "secret_cosmwasm_contract"
+version = "0.0.1"
+authors = ["Fábio Soares"]
+edition = "2018"
+description = ""
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate-type = ["cdylib", "rlib"]
+ 
+[profile.release]
+opt-level = 3
+debug = false
+rpath = false
+lto = true
+debug-assertions = false
+codegen-units = 1
+panic = 'abort'
+incremental = false
+overflow-checks = true
+
+[features]
+default = []
+backtraces = ["cosmwasm-std/backtraces"]
+
+[dependencies]
+cosmwasm-std = { package = "secret-cosmwasm-std", version = "1.0.0", features = [
+  "stargate"
+] }
+schemars = "0.8.1"
+serde = { version = "1.0.114", default-features = false, features = ["derive"] }
+secret-toolkit = "0.6.0"
+serde-json-wasm = "0.2.1"

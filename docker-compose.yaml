@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  archway-localnet:
+    container_name: archway-localnet
+    image: archwaynetwork/archwayd:latest
+    entrypoint: ["sh","/opt/localnet_init.sh"]
+    ports:
+      - 26657:26657
+      - 26656:26656
+      - 1317:1317
+    volumes:
+      - ./:/root/code
+      - ./conf/archway/localnet_init.sh:/opt/localnet_init.sh
+      - ./conf/archway/IBCConfig.toml:/tmp/config.toml
+      - ./conf/archway/devApiConfig.toml:/tmp/app.toml
+
+  secret-localnet:
+    user: root
+    container_name: secret-localnet
+    image: ghcr.io/scrtlabs/localsecret:latest
+    command: "chmod +x /root/bootstrap_init.sh"
+    environment:
+      - CHAINID=secret-local
+    volumes:
+       - ./:/root/code
+       - ./conf/secret/bootstrap_init.sh:/root/bootstrap_init.sh
+    ports:
+      - 36657:26657
+      - 36656:26656
+      - 2317:1317
+
+  relayer:
+    user: root
+    container_name: relayer
+    entrypoint: ["sh","/opt/relayer_entrypoint.sh"]
+    image: informalsystems/hermes:1.0.0-rc.2
+    volumes:
+      - ./conf/relayer/relayer_entrypoint.sh:/opt/relayer_entrypoint.sh
+      - ./conf/keys/rly-archway.json:/root/.hermes/rly-archway.json
+      - ./conf/keys/rly-secret.mnemonic:/root/.hermes/rly-secret.mnemonic
+      - ./conf/relayer/hermesConfig.toml:/root/.hermes/config.toml
